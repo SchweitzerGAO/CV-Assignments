@@ -39,7 +39,7 @@ def camera_calib(h, w):
 
 def BEV_generate(w, h):
     size = (1280, 1706)
-    img = cv2.imread('img.jpg')
+    img = cv2.imread('img2.jpg')
     # img = cv2.resize(img, size)
     intrinsic_cpp = np.array([[1246.6625, 0, 894.65857],
                               [0, 1245.8951, 665.9408],
@@ -53,6 +53,7 @@ def BEV_generate(w, h):
 
     img_undistorted_cpp = cv2.undistort(img, intrinsic_cpp, distortion_cpp)
     img_undistorted_cpp_gray = cv2.cvtColor(img_undistorted_cpp, cv2.COLOR_BGR2GRAY)
+    # img_undistorted_cpp_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     img_undistorted_py = cv2.undistort(img, intrinsic_py, distortion_py)
     img_undistorted_py_gray = cv2.cvtColor(img_undistorted_py, cv2.COLOR_BGR2GRAY)
@@ -70,7 +71,8 @@ def BEV_generate(w, h):
 
     # points of the PCS
     if ret_py and ret_cpp:
-        point1 = np.array([corners_cpp[0, :], corners_cpp[8, :], corners_cpp[-9, :], corners_cpp[-1, :]], dtype=np.float32)
+        point1 = np.array([corners_cpp[0, :], corners_cpp[8, :], corners_cpp[-9, :], corners_cpp[-1, :]],
+                          dtype=np.float32)
     else:
         print("No chessboard corners found!")
         return
@@ -78,16 +80,16 @@ def BEV_generate(w, h):
     # points of the WCS
     point2 = np.array([wcs[0, :][:-1], wcs[8, :][:-1], wcs[-9, :][:-1], wcs[-1, :][:-1]], dtype=np.float32)
     # print(point2)
-    point2[:] = point2[:] * 20 + 640
-    # point2[:, 0] = point2[:, 0] * 15 + size[1]/2
-    # point2[:, 1] = point2[:, 1] * 15 + size[0]/2
+    # point2[:] = point2[:] * 20 + 640
+    point2[:, 0] = point2[:, 0] * 15 + 400
+    point2[:, 1] = point2[:, 1] * 15 + 400
     # print(point2)
 
     # generate BEV
     M = cv2.getPerspectiveTransform(point1, point2)
     out_img = cv2.warpPerspective(img, M, size)
     cv2.imshow('result', out_img)
-    cv2.imwrite('result.jpg', out_img)
+    # cv2.imwrite('result.jpg', out_img)
     cv2.waitKey()
     cv2.destroyAllWindows()
 
