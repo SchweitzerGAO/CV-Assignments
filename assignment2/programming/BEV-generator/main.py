@@ -67,7 +67,7 @@ def BEV_generate(w, h):
     # build a WCS
     wcs = np.zeros((w * h, 3), np.float32)
     wcs[:, :2] = np.mgrid[0:w, 0:h].T.reshape(-1, 2)
-    # print(wcs)
+    print(wcs)
 
     # points of the PCS
     if ret_py and ret_cpp:
